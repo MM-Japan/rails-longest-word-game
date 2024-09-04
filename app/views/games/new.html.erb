@@ -1,17 +1,22 @@
 <div class="game-container">
   <div class="game-card">
     <h1 class="game-title">Word Quest</h1>
-    <ul class="letter-list">
-      <% @new.each do |letter| %>
-        <li class="letter-item" data-letter="<%= letter %>"><%= letter %></li>
-      <% end %>
-    </ul>
 
+    <!-- Letter Cards -->
+    <div class="letter-container">
+      <% @new.each_with_index do |letter, index| %>
+        <div class="letter-card letter-item" data-letter="<%= letter %>" data-index="<%= index %>">
+          <%= letter %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Form for guessing the word -->
     <%= form_with url: score_path, method: :post, local: true, data: { turbo: false } do %>
       <%= hidden_field_tag :letters, @new.join %>
 
       <input type="text" id="guess-input" name="guess" class="guess-input" placeholder="What's the longest word you can find?" required readonly>
-      <input type="submit" value="Guess" class="btn-submit">
+      <input type="submit" value="Guess" class="btn-submit letter-card"> <!-- Updated to match letter-card style -->
     <% end %>
   </div>
 </div>

@@ -3,26 +3,20 @@ class GamesController < ApplicationController
   before_action :initialize_score, only: [:new, :score]
   require "open-uri"
   require "json"
+
   def new
-    @new = []
-    8.times{@new <<  ("a".."z").to_a.sample}
-    2.times{@new <<  ["a", "e", "i", "o", "u"].sample}
+    initialize_letters
   end
 
   def score
-    logger.debug "Session CSRF Token: #{session[:_csrf_token]}"
-    logger.debug "Form CSRF Token: #{params[:authenticity_token]}"
+    initialize_letters unless params[:letters] # Ensure @new is set if not passed via params
     guess = params[:guess]
-    letters = params[:letters].chars # Convert back to an array of letters
+    letters = params[:letters].chars
 
-    # Check word validity via the API
     result = run_api(guess)
-
-    # Validate the word against the letters
     valid = guess.chars.all? { |letter| letters.include?(letter) }
     repeated = guess.upcase.chars.all? { |letter| guess.upcase.count(letter) <= letters.count(letter) }
 
-    # Handle the game logic based on the results
     if result && valid && !repeated
       @word_length = guess.length
       @message = "Well done!"
@@ -36,15 +30,23 @@ class GamesController < ApplicationController
     end
   end
 
-
-
   def reset_score
     session[:total_score] = 0
-    redirect_to new_path, notice: "Your score has been reset."
+    flash.now[:notice] = "Your score has been reset."
+    initialize_letters
+    render :new
   end
+
+  private
 
   def initialize_score
     session[:total_score] ||= 0
+  end
+
+  def initialize_letters
+    @new = []
+    8.times { @new << ("a".."z").to_a.sample }
+    2.times { @new << ["a", "e", "i", "o", "u"].sample }
   end
 
   def run_api(guess)
@@ -52,5 +54,8 @@ class GamesController < ApplicationController
     result_serialized = URI.open(url).read
     dictionary_hash = JSON.parse(result_serialized)
     dictionary_hash["found"]
+  rescue OpenURI::HTTPError => e
+    logger.error "API call failed: #{e.message}"
+    false
   end
 end

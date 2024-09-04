@@ -1,13 +1,14 @@
 <div class="game-container">
   <div class="game-card">
-    <p class="result-message"><%= @message %></p>
-    <p>Your word score:</p>
-    <h2 class="score-display"><%= @word_length %></h2>
-    <p>Total Score: <span class="total-score"><%= session[:total_score] %></span></p>
-    <%= link_to 'Play again', new_path, class: 'btn-action btn-play-again', data: { turbo: false } %>
-
+    <div class="score-card-dark">
+      <p class="result-message"><strong><%= @message %></strong></p>
+      <p class="result-message">Your word score:</p>
+      <h2 class="score-display"><%= @word_length %></h2>
+      <p class="result-message">Total Score: <span class="total-score"><%= session[:total_score] %></span></p>
+    </div>
+    <%= link_to 'Play again', new_path, class: 'btn-action btn-play-again letter-card', data: { turbo: false } %> <!-- Updated to match letter-card style -->
     <div class="reset-card">
-      <%= button_to 'Reset Score', reset_score_path, method: :post, class: 'btn-action btn-reset' %>
+      <%= button_to 'Reset Score', reset_score_path, method: :post, class: 'btn-action btn-reset letter-card', data: { turbo: false } %> <!-- Updated to match letter-card style -->
     </div>
   </div>
 </div>
