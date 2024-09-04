@@ -1,0 +1,17 @@
+<div class="game-container">
+  <div class="game-card">
+    <h1 class="game-title">Word Quest</h1>
+    <ul class="letter-list">
+      <% @new.each do |letter| %>
+        <li class="letter-item" data-letter="<%= letter %>"><%= letter %></li>
+      <% end %>
+    </ul>
+
+    <%= form_with url: score_path, method: :post, local: true, data: { turbo: false } do %>
+      <%= hidden_field_tag :letters, @new.join %>
+
+      <input type="text" id="guess-input" name="guess" class="guess-input" placeholder="What's the longest word you can find?" required readonly>
+      <input type="submit" value="Guess" class="btn-submit">
+    <% end %>
+  </div>
+</div>
